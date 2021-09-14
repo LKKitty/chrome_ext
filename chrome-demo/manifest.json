@@ -3,7 +3,7 @@
 	"name": "Chrome插件demo",
 	"version": "1.0",
 	"description": "最简单的Chrome插件demo",
-	"author": "sxei",
+	"author": "Ellin",
 	"icons":
 	{
 		"48": "icon.png",

@@ -6,39 +6,50 @@ document.addEventListener('DOMContentLoaded', function()
 	injectCustomJs();
 	if(location.host == 'www.baidu.com')
 	{
-		function fuckBaiduAD()
+		function removeBaiduAD()
 		{
 			if(document.getElementById('my_custom_css')) return;
 			let temp = document.createElement('style');
 			temp.id = 'my_custom_css';
 			(document.head || document.body).appendChild(temp);
 			let css = `
-			/* 移除百度顶部广告 */
-			#content_left .div:not(.result){display:none;!important}
-			/* 移除百度右侧广告热搜 */
-			#content_right{display:none;}
+			/* 移除百度右侧顶部广告 */
+			#content_right > div{display:none;}
 			`;
 			temp.innerHTML = css;
 			console.log('已注入自定义CSS！');
 			// 屏蔽百度推广信息
 			removeAdByJs();
 			// 这种必须用JS移除的广告一般会有延迟，干脆每隔一段时间清楚一次
-			interval = setInterval(removeAdByJs, 2000);
-			
+			interval = setInterval(removeAdByJs, 3000);
 			// 重新搜索时页面不会刷新，但是被注入的style会被移除，所以需要重新执行
 			temp.addEventListener('DOMNodeRemoved', function(e)
 			{
 				console.log('自定义CSS被移除，重新注入！');
 				if(interval) clearInterval(interval);
-				fuckBaiduAD();
+				removeBaiduAD();
 			});
 		}
 		let interval = 0;
+		// 移除广告
 		function removeAdByJs()
 		{
-			$('[data-tuiguang]').parents('[data-click]').remove();
+			$("div[id='content_left'] >div").each(function(index,element) {
+				let t = $(element).children(':last-child').children(':last-child').text();
+				if (t=="广告"){
+					$(element).remove();
+				   }
+				let xzggbt =$(element).find("span");
+				if (xzggbt){
+					xzggbt.each(function(index,elnt) {
+					if  ( $(elnt).text()=="广告"){
+						$(element).remove();
+					}
+					})
+				}
+			})
 		}
-		fuckBaiduAD();
+		removeBaiduAD();
 		initCustomPanel();
 		initCustomEventListen();
 	}
@@ -78,7 +89,6 @@ function injectCustomJs(jsPath)
 	document.body.appendChild(temp);
 }
 // 主动发送消息给后台
-// 要演示此功能，请打开控制台主动执行sendMessageToBackground()
 function sendMessageToBackground(message) {
 	chrome.runtime.sendMessage({greeting: message || '你好，我是content-script呀，我主动发消息给后台！'}, function(response) {
 		tip('收到来自后台的回复：' + response);

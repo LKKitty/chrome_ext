@@ -11,13 +11,14 @@ function sendMessageToContentScriptByPostMessage(data)
 
 // 通过DOM事件发送消息给content-script
 (function() {
-	let customEvent = new CustomEvent('Event');
-	customEvent.initEvent('myCustomEvent', true, true);
+	// 创建一个自定义事件
+	let customEvent = new CustomEvent('myCustomEvent');
 	// 通过事件发送消息给content-script
 	function sendMessageToContentScriptByEvent(data) {
 		data = data || '你好，我是injected-script!';
 		var hiddenDiv = document.getElementById('myCustomEventDiv');
 		hiddenDiv.innerText = data
+		/* 触发自定义事件 */
 		hiddenDiv.dispatchEvent(customEvent);
 	}
 	window.sendMessageToContentScriptByEvent = sendMessageToContentScriptByEvent;
